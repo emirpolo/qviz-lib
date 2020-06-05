@@ -2,24 +2,38 @@
 import "./style.css";
 
 import { XYChart } from "./qviz/XYCharts/XYCharts";
+import { simpleData, multiData } from "./data";
 
 // Write TypeScript code!
 const appDiv: HTMLElement = document.getElementById("app");
-appDiv.innerHTML = `<div id="chart-canvas"></div>`;
+appDiv.innerHTML = `
+<div id="barSimple" class="canvas"></div>
+<div id="barStack" class="canvas"></div>
+`;
 
-const element = document.getElementById("chart-canvas");
+let element = document.getElementById("barSimple");
 new XYChart({
   element,
   width: element.clientWidth,
   height: element.clientHeight,
   chart: {
     type: "bars",
-    data: [
-      { x: "Bquilla", y: 21 },
-      { x: "Sta Mta", y: 59 },
-      { x: "Cgena", y: 43 },
-      { x: "Vupar", y: 66 },
-      { x: "Sucre", y: 95 },
-    ]
+    // align: "stack",
+    // data: multiData,
+    data: simpleData,
+    colors: ['darkgreen', 'darkblue', 'darkorange'],
+  }
+});
+
+element = document.getElementById("barStack");
+new XYChart({
+  element,
+  width: element.clientWidth,
+  height: element.clientHeight,
+  chart: {
+    type: "bars",
+    align: "stack",
+    data: multiData,
+    colors: ['darkgreen', 'darkblue', 'darkorange'],
   }
 });

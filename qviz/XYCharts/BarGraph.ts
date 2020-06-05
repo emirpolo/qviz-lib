@@ -6,11 +6,7 @@ export class BarGraph {
   }
 
   drawBars() {
-    let { data, scaleX, scaleY, fieldX, fieldY } = this.config;
-
-    // set defaults accessor
-    fieldX = fieldX || "x";
-    fieldY = fieldY || "y";
+    let { data, scaleX, scaleY} = this.config;
 
     // draw bars
     const calcs = this.barCalcs();
@@ -22,9 +18,10 @@ export class BarGraph {
       .selectAll("rect")
       .data(data)
       .join("rect")
-      .attr("x", d => scaleX(d[fieldX]) + calcs.translate)
-      .attr("y", d => scaleY(d[fieldY]))
-      .attr("height", d => scaleY(0) - scaleY(d[fieldY]))
+      .attr("fill", d => d.color)
+      .attr("x", d => scaleX(d.x) + calcs.translate)
+      .attr("y", d => scaleY(d.y1))
+      .attr("height", d => scaleY(d.y0) - scaleY(d.y1))
       .attr("width", calcs.barSize);
   }
 
@@ -39,9 +36,9 @@ export class BarGraph {
     const scale = this.config.scaleX.copy();
     const bandSize = scale.bandwidth();
     let pad = this.config.padding;
-    
-    if (pad === null || pad === undefined) pad = .1; 
-    scale.paddingInner(Number.isInteger(pad) ? 4 * pad / bandSize : pad);
+
+    if (pad === null || pad === undefined) pad = 0.1;
+    scale.paddingInner(Number.isInteger(pad) ? (4 * pad) / bandSize : pad);
 
     const barSize = scale.bandwidth();
     const translate = (bandSize - barSize) / 2;
@@ -51,10 +48,15 @@ export class BarGraph {
 }
 
 interface BarGraphConfig {
-  data: { [xyField: string]: string | number }[];
+  data: XYData[];
   scaleX: Function | any;
   scaleY: Function | any;
-  fieldX?: string; // accessor for xField. default: 'x' => string | number
-  fieldY?: string; // accessor for yField. default: 'y' => number
   padding?: number; // space between bars. if its integer is assumed as px, floating number is assumed as percentage, default .1
+}
+
+interface XYData {
+  x: string; // category name
+  y0: number; // lower Y Value
+  y1: number; // upper Y value
+  serie: string; // serie name 
 }

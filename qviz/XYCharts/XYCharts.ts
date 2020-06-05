@@ -18,6 +18,7 @@ export class XYChart {
       .attr("viewBox", `0 0 ${this.config.width} ${this.config.height}`);
 
     this._data = new DataPreparation(config.chart);
+    console.log(this._data)
     this._scales.y0 = this.drawYaxis().scale;
     this._scales.x = this.drawXaxis().scale;
     this.drawGraphs();
@@ -35,7 +36,7 @@ export class XYChart {
       this.config.height - this._margins.top - this._margins.bottom;
 
     return new AxisContinuous(yAxisGroup, {
-      domain: this._data.minMax, // min and max of values
+      domain: this._data.yAxis.minMax, // min and max of values
       range: [0, rangeMax], // Axis height in pixels
       isVertical: true,
       orientation: "Left",
@@ -75,7 +76,7 @@ export class XYChart {
       scaleX: this._scales.x,
       scaleY: this._scales.y0,
       // padding: 0,
-      data: this.config.chart.data
+      data: this._data.data
     });
   }
 }
