@@ -56,8 +56,8 @@ export class BarGraph {
       .join("rect")
       .attr("fill", d => d.color)
       .attr("x", d => scale(d.serie))
-      .attr("y", d => scaleY(d.value))
-      .attr("height", d => y0 - scaleY(d.value))
+      .attr("y", d => (d.value < 0 ? y0 : scaleY(d.value)))
+      .attr("height", d => Math.abs(y0 - scaleY(d.value)))
       .attr("width", scale.bandwidth());
   }
 
