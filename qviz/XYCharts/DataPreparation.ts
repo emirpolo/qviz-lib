@@ -27,29 +27,38 @@ export class DataPreparation {
   analysis(category, val) {
     const colors = this.layerConfig.colors;
     const colorLen = colors.length;
+    const isStack = this.layerConfig.align === "stack";
+    const isStack100 = this.layerConfig.align === "stack100";
+    const isCluster = this.layerConfig.align === "cluster";
     let sumPos = 0,
       sumNeg = 0,
       y0,
       y1;
 
-    if (this.layerConfig.align === "stack") {
+    if (isStack || isStack100 || isCluster) {
       val.forEach((s, i) => {
         // build stacks
-        if (s.value >= 0) {
-          y0 = sumPos;
-          y1 = sumPos += s.value;
-        } else {
-          y1 = sumNeg;
-          y0 = sumNeg += s.value;
-        }
+        if (isStack || isStack100) {
+          if (s.value >= 0) {
+            y0 = sumPos;
+            y1 = sumPos += s.value;
+          } else {
+            y1 = sumNeg;
+            y0 = sumNeg += s.value;
+          }
 
-        this.data.push({
-          serie: s.serie,
-          x: category,
-          y0,
-          y1,
-          color: colors[i % colorLen]
-        });
+          this.data.push({
+            serie: s.serie,
+            x: category,
+            y: s.value,
+            y0,
+            y1,
+            color: colors[i % colorLen]
+          });
+        } else {
+          this.clacMinMax(s.value, this.yAxis.minMax);
+          s.color = colors[i % colorLen];
+        }
 
         // series
         if (!this.series[s.serie]) {
@@ -59,13 +68,21 @@ export class DataPreparation {
         }
       });
 
-      this.clacMinMax(sumPos, this.yAxis.minMax);
-      this.clacMinMax(sumNeg, this.yAxis.minMax);
+      if (!isCluster) {
+        this.clacMinMax(sumPos, this.yAxis.minMax);
+        this.clacMinMax(sumNeg, this.yAxis.minMax);
+      } else {
+        this.data.push({
+          x: category,
+          y: val
+        });
+      }
     } else {
       this.clacMinMax(val, this.yAxis.minMax);
 
       this.data.push({
         x: category,
+        y: val,
         y0: val >= 0 ? 0 : val,
         y1: val >= 0 ? val : 0,
         color: colors[0]
@@ -84,9 +101,12 @@ export class DataPreparation {
   }
 }
 
+export type LayerType = typeof layers[number];
+export type LayerAlign = typeof align[number];
+
 interface LayerConfig {
-  type: typeof layers[number];
-  align: typeof align[number];
+  type: LayerType;
+  align: LayerAlign;
   colors: string[];
   data: SimpleData[];
   fieldX: string;

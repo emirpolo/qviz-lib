@@ -1,12 +1,17 @@
 import * as d3 from "d3";
+import { LayerAlign } from "../XYCharts/DataPreparation";
 
 export class BarGraph {
   constructor(private graphArea, private config: BarGraphConfig) {
-    this.drawBars();
+    if (config.align === "cluster") {
+      this.drawClusterBars();
+    } else {
+      this.drawBars();
+    }
   }
 
   drawBars() {
-    let { data, scaleX, scaleY} = this.config;
+    let { data, scaleX, scaleY } = this.config;
 
     // draw bars
     const calcs = this.barCalcs();
@@ -25,6 +30,37 @@ export class BarGraph {
       .attr("width", calcs.barSize);
   }
 
+  drawClusterBars() {
+    let { data, scaleX, scaleY, series } = this.config;
+
+    // draw bars
+    const calcs = this.barCalcs();
+    const y0 = scaleY(0);
+    const scale = scaleX
+      .copy()
+      .range([0, calcs.barSize])
+      .domain(Object.keys(series));
+
+    this.setPadding(scale, scale.bandwidth());
+
+    this.graphArea
+      .append("g")
+      .attr("class", "qviz-bars-group")
+      .selectAll("g")
+      .data(data)
+      .join("g")
+      .attr("transform", d => `translate(${scaleX(d.x) + calcs.translate}, 0)`)
+
+      .selectAll("rect")
+      .data(d => d.y)
+      .join("rect")
+      .attr("fill", d => d.color)
+      .attr("x", d => scale(d.serie))
+      .attr("y", d => scaleY(d.value))
+      .attr("height", d => y0 - scaleY(d.value))
+      .attr("width", scale.bandwidth());
+  }
+
   /**
    * Assuming categorical scale
    *
@@ -35,15 +71,20 @@ export class BarGraph {
     // debugger;
     const scale = this.config.scaleX.copy();
     const bandSize = scale.bandwidth();
-    let pad = this.config.padding;
 
-    if (pad === null || pad === undefined) pad = 0.1;
-    scale.paddingInner(Number.isInteger(pad) ? (4 * pad) / bandSize : pad);
+    this.setPadding(scale, bandSize);
 
     const barSize = scale.bandwidth();
     const translate = (bandSize - barSize) / 2;
 
     return { barSize, bandSize, translate };
+  }
+
+  setPadding(scale, bandSize) {
+    let pad = this.config.padding;
+
+    if (pad === null || pad === undefined) pad = 0.1;
+    scale.paddingInner(Number.isInteger(pad) ? (4 * pad) / bandSize : pad);
   }
 }
 
@@ -52,11 +93,13 @@ interface BarGraphConfig {
   scaleX: Function | any;
   scaleY: Function | any;
   padding?: number; // space between bars. if its integer is assumed as px, floating number is assumed as percentage, default .1
+  align: LayerAlign;
+  series?: object;
 }
 
 interface XYData {
   x: string; // category name
   y0: number; // lower Y Value
   y1: number; // upper Y value
-  serie: string; // serie name 
+  serie: string; // serie name
 }

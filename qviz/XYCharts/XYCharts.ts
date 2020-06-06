@@ -75,8 +75,9 @@ export class XYChart {
     new BarGraph(graphArea, {
       scaleX: this._scales.x,
       scaleY: this._scales.y0,
-      // padding: 0,
-      data: this._data.data
+      align: this.config.chart.align,
+      data: this._data.data,
+      series: this._data.series
     });
   }
 }

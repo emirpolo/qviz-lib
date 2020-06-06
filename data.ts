@@ -42,9 +42,9 @@ export const multiData = [
   {
     x: "Sucre",
     y: [
-      { serie: "Confirmados", value: 1 },
-      { serie: "Recuperados", value: 1 },
-      { serie: "Muertos", value: 0 }
+      { serie: "Confirmados", value: 5 },
+      { serie: "Recuperados", value: 5 },
+      { serie: "Muertos", value: 1 }
     ]
   }
 ];
