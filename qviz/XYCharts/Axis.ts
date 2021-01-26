@@ -31,7 +31,9 @@ export class Axis {
   }
 
   getAxisFn() {
-    return d3[`axis${this._cfg.orientation}`](this.scale);
+    return d3[`axis${this._cfg.orientation}`](this.scale).tickFormat(
+      this._cfg.formatter
+    );
   }
 
   buildAxis() {
@@ -73,6 +75,7 @@ interface AxisConfig {
   domain: [number, number] | string[]; // [min, max] for Continuous axis, Array<string> forn Categorical Axis
   range: [number, number]; // pixel dimension of the axis
   orientation: "Left" | "Right" | "Top" | "Bottom";
+  formatter: Function;
   scaleType?: "scaleBand" | "scaleLinear";
   isVertical?: boolean;
   label?: string;

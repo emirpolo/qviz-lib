@@ -1,5 +1,5 @@
 import * as d3 from "d3";
-import { margins } from "../utils/helpers";
+import { margins, identity } from "../utils/helpers";
 import { AxisContinuous, AxisCategorical } from "./Axis";
 import { BarGraph } from "./BarGraph";
 import { DataPreparation } from "./DataPreparation";
@@ -35,12 +35,15 @@ export class XYChart {
     const rangeMax =
       this.config.height - this._margins.top - this._margins.bottom;
 
+    const formatter = this.config.chart.axes?.y?.formatter || identity;
+
     return new AxisContinuous(yAxisGroup, {
       domain: this._data.yAxis.minMax, // min and max of values
       range: [0, rangeMax], // Axis height in pixels
       isVertical: true,
       orientation: "Left",
-      label: "Y Axis"
+      label: "Y Axis",
+      formatter
     });
   }
 
@@ -60,7 +63,8 @@ export class XYChart {
       domain: this._data.categories,
       range: [0, rangeMax],
       orientation: "Bottom",
-      label: "X Axis"
+      label: "X Axis",
+      formatter: identity
     });
   }
 

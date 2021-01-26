@@ -22,7 +22,7 @@ new XYChart({
     // align: "stack",
     // data: multiData,
     data: simpleData,
-    colors: ['darkgreen', 'darkblue', 'darkorange'],
+    colors: ["darkgreen", "darkblue", "darkorange"]
   }
 });
 
@@ -35,10 +35,9 @@ new XYChart({
     type: "bars",
     align: "stack",
     data: multiData,
-    colors: ['darkgreen', 'darkblue', 'darkorange'],
+    colors: ["darkgreen", "darkblue", "darkorange"]
   }
 });
-
 
 element = document.getElementById("barMulti");
 new XYChart({
@@ -49,6 +48,13 @@ new XYChart({
     type: "bars",
     align: "cluster",
     data: multiData,
-    colors: ['darkgreen', 'darkblue', 'darkorange'],
+    colors: ["darkgreen", "darkblue", "darkorange"],
+    axes: {
+      y: {
+        formatter(tickmark = 0) {
+          return "$ " + tickmark.toLocaleString();
+        }
+      }
+    }
   }
 });

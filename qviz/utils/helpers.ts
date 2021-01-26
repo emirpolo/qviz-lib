@@ -14,3 +14,7 @@ export const margins = () => ({
   left: 50,
   right: 10
 });
+
+export function identity(args) {
+  return args;
+}
